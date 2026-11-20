@@ -1,0 +1,337 @@
+schema: '2.0'
+stages:
+  generate:
+    cmd: python -m crossfraud.cli generate --config config/synthetic.json 
+      --data-dir data/pipeline
+    deps:
+    - path: config/synthetic.json
+      hash: md5
+      md5: c91cefd41290598788bd7b56d52adc3b
+      size: 18
+    - path: crossfraud/cli.py
+      hash: md5
+      md5: b1c839da6c06452ff014ea0ef3cbe9eb
+      size: 6432
+    - path: crossfraud/data/demographics.py
+      hash: md5
+      md5: 793083b94cae56cab5b903ea142b12b1
+      size: 2920
+    - path: crossfraud/data/synthetic.py
+      hash: md5
+      md5: 087f72c466da12a13f3808e2cb415326
+      size: 24859
+    - path: crossfraud/io.py
+      hash: md5
+      md5: f54de49cca4854e6e41d6d8d5ea624ac
+      size: 2189
+    - path: requirements-lock.txt
+      hash: md5
+      md5: a2f3d19820fa9d962e3b59a8de242023
+      size: 339
+    outs:
+    - path: data/pipeline/dataset_manifest.json
+      hash: md5
+      md5: 65b8d5a41c6638126182e70b54b4d3b9
+      size: 496
+    - path: data/pipeline/ground_truth
+      hash: md5
+      md5: 51a02316c40813b2eea14ce2c7cf535f.dir
+      size: 1139743
+      nfiles: 5
+    - path: data/pipeline/profiles
+      hash: md5
+      md5: e8db30ab1f48d328419acc5062c33201.dir
+      size: 43689
+      nfiles: 1
+    - path: data/pipeline/raw
+      hash: md5
+      md5: ae04578c752d343e583900d334eab219.dir
+      size: 1922453
+      nfiles: 4
+  ingest:
+    cmd: python -m crossfraud.cli ingest --data-dir data/pipeline 
+      --ingested-at-utc 2025-03-03T00:00:00Z
+    deps:
+    - path: crossfraud/cli.py
+      hash: md5
+      md5: b1c839da6c06452ff014ea0ef3cbe9eb
+      size: 6432
+    - path: crossfraud/data/ingestion.py
+      hash: md5
+      md5: 3f5a6de771aa03403abd4fdb00d7f4eb
+      size: 14727
+    - path: crossfraud/data/validation.py
+      hash: md5
+      md5: 8c3bbcdefd8f8b4b5cfd102448d4dc8a
+      size: 11102
+    - path: crossfraud/features/text_features.py
+      hash: md5
+      md5: e598262f809a98a68039e07c031d6e34
+      size: 5505
+    - path: crossfraud/io.py
+      hash: md5
+      md5: f54de49cca4854e6e41d6d8d5ea624ac
+      size: 2189
+    - path: crossfraud/schemas.py
+      hash: md5
+      md5: 7732b6e7a14c3641d0105b25a56edde6
+      size: 1470
+    - path: data/pipeline/ground_truth
+      hash: md5
+      md5: 51a02316c40813b2eea14ce2c7cf535f.dir
+      size: 1139743
+      nfiles: 5
+    - path: data/pipeline/profiles
+      hash: md5
+      md5: e8db30ab1f48d328419acc5062c33201.dir
+      size: 43689
+      nfiles: 1
+    - path: data/pipeline/raw
+      hash: md5
+      md5: ae04578c752d343e583900d334eab219.dir
+      size: 1922453
+      nfiles: 4
+    - path: requirements-lock.txt
+      hash: md5
+      md5: a2f3d19820fa9d962e3b59a8de242023
+      size: 339
+    outs:
+    - path: data/pipeline/cleaned
+      hash: md5
+      md5: ba79bc5321ed39de5ce79b57f8f3c86c.dir
+      size: 3542685
+      nfiles: 5
+    - path: data/pipeline/reports/validation_report.json
+      hash: md5
+      md5: f5fc8c8c337d16f211b145ab3e1cc574
+      size: 1732
+  features:
+    cmd: python -m crossfraud.cli features --data-dir data/pipeline
+    deps:
+    - path: crossfraud/cli.py
+      hash: md5
+      md5: b1c839da6c06452ff014ea0ef3cbe9eb
+      size: 6432
+    - path: crossfraud/data/ingestion.py
+      hash: md5
+      md5: 3f5a6de771aa03403abd4fdb00d7f4eb
+      size: 14727
+    - path: crossfraud/data/validation.py
+      hash: md5
+      md5: 8c3bbcdefd8f8b4b5cfd102448d4dc8a
+      size: 11102
+    - path: crossfraud/features
+      hash: md5
+      md5: b067a906ee417713d1a9281cb2a420af.dir
+      size: 15439
+      nfiles: 5
+    - path: crossfraud/io.py
+      hash: md5
+      md5: f54de49cca4854e6e41d6d8d5ea624ac
+      size: 2189
+    - path: crossfraud/schemas.py
+      hash: md5
+      md5: 7732b6e7a14c3641d0105b25a56edde6
+      size: 1470
+    - path: data/pipeline/cleaned/manifest.json
+      hash: md5
+      md5: 340509a239802dd6000d7949dc28b3fe
+      size: 3016
+    - path: data/pipeline/raw
+      hash: md5
+      md5: ae04578c752d343e583900d334eab219.dir
+      size: 1922453
+      nfiles: 4
+    - path: requirements-lock.txt
+      hash: md5
+      md5: a2f3d19820fa9d962e3b59a8de242023
+      size: 339
+    outs:
+    - path: data/pipeline/processed/conversation_features.csv
+      hash: md5
+      md5: 4e0359b077dbafb187efe11d9eaf001f
+      size: 270537
+    - path: data/pipeline/processed/messages_enriched.csv
+      hash: md5
+      md5: ba685dc3ce4d128089f94240abe85db3
+      size: 815169
+    - path: data/pipeline/processed/transaction_features.csv
+      hash: md5
+      md5: 6a6705bb009f582853137a107bde1805
+      size: 2309963
+    - path: data/pipeline/reports/feature_summary.json
+      hash: md5
+      md5: 8fb4a6e4ff38f773d93172bc6b2bb548
+      size: 2715
+  train:
+    cmd: python -m crossfraud.cli phase2 --seed 42 --data-dir data/pipeline 
+      --use-cleaned
+    deps:
+    - path: crossfraud/cli.py
+      hash: md5
+      md5: b1c839da6c06452ff014ea0ef3cbe9eb
+      size: 6432
+    - path: crossfraud/data/ingestion.py
+      hash: md5
+      md5: 3f5a6de771aa03403abd4fdb00d7f4eb
+      size: 14727
+    - path: crossfraud/features
+      hash: md5
+      md5: b067a906ee417713d1a9281cb2a420af.dir
+      size: 15439
+      nfiles: 5
+    - path: crossfraud/io.py
+      hash: md5
+      md5: f54de49cca4854e6e41d6d8d5ea624ac
+      size: 2189
+    - path: crossfraud/models
+      hash: md5
+      md5: 50678f0d89890a4b6eed8dd42ecb9104.dir
+      size: 103079
+      nfiles: 13
+    - path: data/pipeline/cleaned
+      hash: md5
+      md5: ba79bc5321ed39de5ce79b57f8f3c86c.dir
+      size: 3542685
+      nfiles: 5
+    - path: data/pipeline/dataset_manifest.json
+      hash: md5
+      md5: 65b8d5a41c6638126182e70b54b4d3b9
+      size: 496
+    - path: data/pipeline/ground_truth
+      hash: md5
+      md5: 51a02316c40813b2eea14ce2c7cf535f.dir
+      size: 1139743
+      nfiles: 5
+    - path: data/pipeline/profiles
+      hash: md5
+      md5: e8db30ab1f48d328419acc5062c33201.dir
+      size: 43689
+      nfiles: 1
+    - path: data/pipeline/raw
+      hash: md5
+      md5: ae04578c752d343e583900d334eab219.dir
+      size: 1922453
+      nfiles: 4
+    - path: requirements-lock.txt
+      hash: md5
+      md5: a2f3d19820fa9d962e3b59a8de242023
+      size: 339
+    outs:
+    - path: data/pipeline/phase2_models
+      hash: md5
+      md5: c836ec064c8cbae4a5a686de65c41687.dir
+      size: 2576510
+      nfiles: 3
+    - path: data/pipeline/processed/phase2_messaging_test_scores.csv
+      hash: md5
+      md5: 31496c07542c5961e849bbbc50accf35
+      size: 1320
+    - path: data/pipeline/processed/phase2_payment_test_scores.csv
+      hash: md5
+      md5: 677e471482d61f996b5551168d61826e
+      size: 32703
+    - path: data/pipeline/reports/phase2_evaluation.json
+      hash: md5
+      md5: 7926cf79048241aca0deca856500a752
+      size: 127368
+  evaluate:
+    cmd: python -m crossfraud.cli phase3 --seed 42 --data-dir data/pipeline 
+      --use-cleaned
+    deps:
+    - path: crossfraud/cli.py
+      hash: md5
+      md5: b1c839da6c06452ff014ea0ef3cbe9eb
+      size: 6432
+    - path: crossfraud/data/ingestion.py
+      hash: md5
+      md5: 3f5a6de771aa03403abd4fdb00d7f4eb
+      size: 14727
+    - path: crossfraud/features
+      hash: md5
+      md5: b067a906ee417713d1a9281cb2a420af.dir
+      size: 15439
+      nfiles: 5
+    - path: crossfraud/io.py
+      hash: md5
+      md5: f54de49cca4854e6e41d6d8d5ea624ac
+      size: 2189
+    - path: crossfraud/models
+      hash: md5
+      md5: 50678f0d89890a4b6eed8dd42ecb9104.dir
+      size: 103079
+      nfiles: 13
+    - path: data/pipeline/cleaned
+      hash: md5
+      md5: ba79bc5321ed39de5ce79b57f8f3c86c.dir
+      size: 3542685
+      nfiles: 5
+    - path: data/pipeline/dataset_manifest.json
+      hash: md5
+      md5: 65b8d5a41c6638126182e70b54b4d3b9
+      size: 496
+    - path: data/pipeline/ground_truth
+      hash: md5
+      md5: 51a02316c40813b2eea14ce2c7cf535f.dir
+      size: 1139743
+      nfiles: 5
+    - path: data/pipeline/profiles
+      hash: md5
+      md5: e8db30ab1f48d328419acc5062c33201.dir
+      size: 43689
+      nfiles: 1
+    - path: data/pipeline/raw
+      hash: md5
+      md5: ae04578c752d343e583900d334eab219.dir
+      size: 1922453
+      nfiles: 4
+    - path: requirements-lock.txt
+      hash: md5
+      md5: a2f3d19820fa9d962e3b59a8de242023
+      size: 339
+    outs:
+    - path: data/pipeline/reports/phase3_alert_examples.json
+      hash: md5
+      md5: 7258ce095cf786acac3ff47ec9744f78
+      size: 34526
+    - path: data/pipeline/reports/phase3_evaluation.json
+      hash: md5
+      md5: 272fe645f652aa0ce806d38aefd3fd7c
+      size: 16039
+  track:
+    cmd: python -m crossfraud.local_tracking --data-dir data/pipeline
+    deps:
+    - path: crossfraud/local_tracking.py
+      hash: md5
+      md5: be1a533da1705431410f9ed6d96e46f3
+      size: 4357
+    - path: data/pipeline/cleaned/manifest.json
+      hash: md5
+      md5: 340509a239802dd6000d7949dc28b3fe
+      size: 3016
+    - path: data/pipeline/dataset_manifest.json
+      hash: md5
+      md5: 65b8d5a41c6638126182e70b54b4d3b9
+      size: 496
+    - path: data/pipeline/phase2_models
+      hash: md5
+      md5: c836ec064c8cbae4a5a686de65c41687.dir
+      size: 2576510
+      nfiles: 3
+    - path: data/pipeline/reports/phase2_evaluation.json
+      hash: md5
+      md5: 7926cf79048241aca0deca856500a752
+      size: 127368
+    - path: data/pipeline/reports/phase3_evaluation.json
+      hash: md5
+      md5: 272fe645f652aa0ce806d38aefd3fd7c
+      size: 16039
+    - path: requirements-lock.txt
+      hash: md5
+      md5: a2f3d19820fa9d962e3b59a8de242023
+      size: 339
+    outs:
+    - path: data/pipeline/tracking/latest.json
+      hash: md5
+      md5: 8ea8d7789e0d485cb107be449bda6064
+      size: 5349

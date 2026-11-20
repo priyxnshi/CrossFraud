@@ -1,0 +1,33 @@
+# Local data, generated outputs, DVC cache, and Python environments
+/data/
+/private/
+/artifacts/
+/models/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.db
+*.sqlite
+*.sqlite3*
+*.joblib
+*.pkl
+/.dvc/cache/
+/.dvc/tmp/
+/.dvc/site-cache/
+/.dvc/config.local
+/.dvc/plots/
+.dvcignore.local
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+.aws/
+credentials.json
+secrets/
+*.pem
+*.key
+*.pfx
+

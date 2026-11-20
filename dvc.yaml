@@ -1,0 +1,102 @@
+stages:
+  generate:
+    cmd: python -m crossfraud.cli generate --config config/synthetic.json --data-dir data/pipeline
+    deps:
+      - config/synthetic.json
+      - crossfraud/data/synthetic.py
+      - crossfraud/data/demographics.py
+      - crossfraud/cli.py
+      - crossfraud/io.py
+      - requirements-lock.txt
+    outs:
+      - data/pipeline/raw
+      - data/pipeline/profiles
+      - data/pipeline/ground_truth
+      - data/pipeline/dataset_manifest.json
+  ingest:
+    cmd: python -m crossfraud.cli ingest --data-dir data/pipeline --ingested-at-utc 2025-03-03T00:00:00Z
+    deps:
+      - data/pipeline/raw
+      - data/pipeline/profiles
+      - data/pipeline/ground_truth
+      - crossfraud/data/ingestion.py
+      - crossfraud/data/validation.py
+      - crossfraud/schemas.py
+      - crossfraud/features/text_features.py
+      - crossfraud/cli.py
+      - crossfraud/io.py
+      - requirements-lock.txt
+    outs:
+      - data/pipeline/cleaned
+    metrics:
+      - data/pipeline/reports/validation_report.json:
+          cache: false
+  features:
+    cmd: python -m crossfraud.cli features --data-dir data/pipeline
+    deps:
+      - data/pipeline/raw
+      - data/pipeline/cleaned/manifest.json
+      - crossfraud/features
+      - crossfraud/data/ingestion.py
+      - crossfraud/data/validation.py
+      - crossfraud/schemas.py
+      - crossfraud/cli.py
+      - crossfraud/io.py
+      - requirements-lock.txt
+    outs:
+      - data/pipeline/processed/messages_enriched.csv
+      - data/pipeline/processed/conversation_features.csv
+      - data/pipeline/processed/transaction_features.csv
+      - data/pipeline/reports/feature_summary.json
+  train:
+    cmd: python -m crossfraud.cli phase2 --seed 42 --data-dir data/pipeline --use-cleaned
+    deps:
+      - data/pipeline/raw
+      - data/pipeline/profiles
+      - data/pipeline/ground_truth
+      - data/pipeline/cleaned
+      - data/pipeline/dataset_manifest.json
+      - crossfraud/models
+      - crossfraud/features
+      - crossfraud/data/ingestion.py
+      - crossfraud/cli.py
+      - crossfraud/io.py
+      - requirements-lock.txt
+    outs:
+      - data/pipeline/phase2_models
+      - data/pipeline/processed/phase2_messaging_test_scores.csv
+      - data/pipeline/processed/phase2_payment_test_scores.csv
+    metrics:
+      - data/pipeline/reports/phase2_evaluation.json:
+          cache: false
+  evaluate:
+    cmd: python -m crossfraud.cli phase3 --seed 42 --data-dir data/pipeline --use-cleaned
+    deps:
+      - data/pipeline/raw
+      - data/pipeline/profiles
+      - data/pipeline/ground_truth
+      - data/pipeline/cleaned
+      - data/pipeline/dataset_manifest.json
+      - crossfraud/models
+      - crossfraud/features
+      - crossfraud/data/ingestion.py
+      - crossfraud/cli.py
+      - crossfraud/io.py
+      - requirements-lock.txt
+    outs:
+      - data/pipeline/reports/phase3_alert_examples.json
+    metrics:
+      - data/pipeline/reports/phase3_evaluation.json:
+          cache: false
+  track:
+    cmd: python -m crossfraud.local_tracking --data-dir data/pipeline
+    deps:
+      - crossfraud/local_tracking.py
+      - data/pipeline/dataset_manifest.json
+      - data/pipeline/cleaned/manifest.json
+      - data/pipeline/reports/phase2_evaluation.json
+      - data/pipeline/reports/phase3_evaluation.json
+      - data/pipeline/phase2_models
+      - requirements-lock.txt
+    outs:
+      - data/pipeline/tracking/latest.json

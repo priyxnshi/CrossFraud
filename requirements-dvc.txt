@@ -1,0 +1,2 @@
+# DVC is optional for the app and required for pipeline orchestration.
+dvc==3.67.1
