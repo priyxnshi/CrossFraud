@@ -31,3 +31,7 @@ secrets/
 *.key
 *.pfx
 
+
+# Static demo build and local Vercel settings
+/public/
+/.vercel/

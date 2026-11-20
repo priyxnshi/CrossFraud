@@ -1,0 +1,5 @@
+{
+  "framework": null,
+  "buildCommand": "node deploy/build.mjs",
+  "outputDirectory": "public"
+}

@@ -43,6 +43,7 @@ const DISCLAIMER = 'Risk scores are indicators for human review and do not estab
 const D = {alerts:[], conversations:[], payments:[], coverage:{}, evaluation:{}};
 let pending, viewToken=0;
 async function request(path, body) {
+  if (window.crossfraudDemo) return window.crossfraudDemo(path, body);
   const response = await fetch(path, body === undefined ? undefined : {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Request failed ('+response.status+')');
@@ -296,7 +297,7 @@ function analytics(params){
   const chosen=params.get('model') in methods?params.get('model'):'combined';
   const m=methods[chosen]?.test||{}, matrix=m.confusion_matrix||{};
   const baseline=Object.entries(methods).map(([id,result])=>({id,...result.test}));
-  return page('Analytics & Reports','Synthetic-data prototype evaluation · Common held-out replay',button('View catalog and evaluation JSON','/catalog'))+
+  return page('Analytics & Reports','Synthetic-data prototype evaluation · Common held-out replay',button('View catalog and evaluation JSON',window.crossfraudDemo?'/demo.json':'/catalog'))+
     '<div class="row summaryline charts">'+Object.keys(methods).map(id=>button(pretty(id),go('analytics',query('model',id)),chosen===id)).join('')+'</div>'+
     '<div class="grid kpis">'+[['Precision',m.precision],['Recall',m.recall],['F1',m.f1],['PR-AUC',m.pr_auc]].map(([label,val])=>kpi(label,score(val),pretty(chosen),'chart',go('analytics',query('model',chosen)))).join('')+'</div>'+
     '<div class="grid two charts">'+section('Confusion matrix',table([['actual','Actual'],['negative','Predicted legitimate'],['positive','Predicted fraud']],[{actual:'Legitimate',negative:fmt(matrix.tn),positive:fmt(matrix.fp)},{actual:'Fraud',negative:fmt(matrix.fn),positive:fmt(matrix.tp)}]))+
@@ -319,7 +320,7 @@ function search(params){
 function settings(){
   return page('Settings','Local analyst profile and demo environment')+'<div class="grid two">'+
     section('Analyst profile',facts([['Role','Demo analyst'],['Access','Local review workspace'],['Time zone','Asia/Kolkata (IST)']])+note('The local demo uses a shared analyst workspace. No account or credentials are required.')+button('Open workspace','#overview',true))+
-    section('Environment',facts([['Data source','Synthetic'],['Scope','Research mode'],['Review storage','Local SQLite']])+'<p class="disclaimer">'+DISCLAIMER+'</p>')+'</div>';
+    section('Environment',facts([['Data source','Synthetic'],['Scope','Research mode'],['Review storage',window.crossfraudDemo?'This browser':'Local SQLite']])+'<p class="disclaimer">'+DISCLAIMER+'</p>')+'</div>';
 }
 async function render(){
   const token=++viewToken;

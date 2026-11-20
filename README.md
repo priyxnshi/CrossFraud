@@ -57,3 +57,9 @@ python -m crossfraud.review_api --data-dir data/pipeline --port 8768
 Open `http://127.0.0.1:8768/` for the landing page or `http://127.0.0.1:8768/#overview` for the analyst dashboard. The app uses the existing Python API and SQLite review history. The root route serves the website and `/alerts` serves the original JSON interface. The frontend is in [review_web](crossfraud/review_web), and the [synthetic catalog](crossfraud/review_catalog.py) supplies masked payment account references and redacted chat evidence.
 
 The workspace uses the saved alert replay and prototype evaluation. Dataset totals describe the synthetic catalog. Alert charts describe the saved alert examples. The application uses a local demo profile, and the Sign In link opens that profile. Investigation notes and review decisions remain in the local review database.
+
+### Hosted synthetic demo
+
+The Vercel build runs `node deploy/build.mjs` and serves the resulting `public/` directory. It uses the checked-in synthetic snapshot at `deploy/demo.json`. On the hosted demo, investigation notes and decisions are stored in the visitor's browser. The local Python app continues to use SQLite.
+
+To refresh the hosted snapshot after a synthetic replay, run `python -m scripts.export_web_demo` from the repository root. The export starts with empty review histories and does not read the local review database.

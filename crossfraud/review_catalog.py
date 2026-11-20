@@ -3,10 +3,10 @@ import csv
 import hashlib
 import json
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
-_ADDRESS = re.compile(r"\b[\w.-]+\s*(?:@|\bat\b|\[at\]|\(at\))\s*(?:demo\w+|test\w+|sandbox\w+|ok\w+|ybl|upi|paytm|ibl)\b", re.I)
+_ADDRESS = re.compile(r"\b[\w.-]+\s*(?:@|\bat\b|\[at\]|\(at\))\s*(?:demo\w+|examplebank|test\w+|sandbox\w+|ok\w+|ybl|upi|paytm|ibl)\b", re.I)
 _URL = re.compile(r"https?://[^\s]+", re.I)
 
 
@@ -52,8 +52,13 @@ class DemoCatalog:
         row = next((row for row in self.rows("raw", "conversations") if row["conversation_id"] == entity), None)
         if row is None:
             return None
+        return self._conversation(row, self.rows("raw", "messages"), cutoff)
+
+    @staticmethod
+    def _conversation(row, rows, cutoff=None):
+        entity = row["conversation_id"]
         messages = []
-        for item in self.rows("raw", "messages"):
+        for item in rows:
             if item["conversation_id"] != entity or (cutoff is not None and item["timestamp"] > cutoff):
                 continue
             original = item["message"]
@@ -69,3 +74,11 @@ class DemoCatalog:
                              "speaker": "Participant" if item["sender_id"] == row["participant_a"] else "Counterparty",
                              "indicators": indicators})
         return {"id": entity, "platform": row["platform"], "messages": messages}
+
+    def conversation_details(self):
+        """Build redacted conversation details in one pass for the static demo."""
+        by_conversation = defaultdict(list)
+        for message in self.rows("raw", "messages"):
+            by_conversation[message["conversation_id"]].append(message)
+        return {row["conversation_id"]: self._conversation(row, by_conversation[row["conversation_id"]])
+                for row in self.rows("raw", "conversations")}
